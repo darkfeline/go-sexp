@@ -48,4 +48,19 @@ func TestEncode(t *testing.T) {
 		t.Parallel()
 		run(t, testcase{v: Cons{1, 2}, want: `(1 . 2)`})
 	})
+	t.Run("marshaler", func(t *testing.T) {
+		t.Parallel()
+		run(t, testcase{
+			v:    testMarshaler{[]byte(`(kokkoro peco kyaru)`)},
+			want: `(kokkoro peco kyaru)`,
+		})
+	})
+}
+
+type testMarshaler struct {
+	b []byte
+}
+
+func (m testMarshaler) MarshalSexp() ([]byte, error) {
+	return m.b, nil
 }
