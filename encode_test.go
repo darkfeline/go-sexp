@@ -53,6 +53,10 @@ func TestEncode(t *testing.T) {
 		v := 5
 		run(t, testcase{v: &v, want: `5`})
 	})
+	t.Run("list", func(t *testing.T) {
+		t.Parallel()
+		run(t, testcase{v: []interface{}{5, "shiori"}, want: `(5 "shiori")`})
+	})
 	t.Run("marshaler", func(t *testing.T) {
 		t.Parallel()
 		run(t, testcase{

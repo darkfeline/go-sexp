@@ -59,6 +59,8 @@ func (enc *Encoder) Encode(v interface{}) error {
 		switch rv.Type().Kind() {
 		case reflect.Ptr:
 			return enc.Encode(rv.Elem().Interface())
+		case reflect.Slice, reflect.Array:
+			return enc.encodeList(rv)
 		default:
 			return fmt.Errorf("sexp encode: unsupported type %T", v)
 		}
@@ -89,6 +91,30 @@ func (enc *Encoder) encodeCons(v Cons) error {
 	}
 	if err := enc.Encode(v.Cdr); err != nil {
 		return err
+	}
+	if err := enc.printf(")"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (enc *Encoder) encodeList(v reflect.Value) error {
+	l := v.Len()
+	if l == 0 {
+		return enc.printf("()")
+	}
+	if err := enc.printf("("); err != nil {
+		return err
+	}
+	for i := 0; i < v.Len(); i++ {
+		if i != 0 {
+			if err := enc.printf(" "); err != nil {
+				return err
+			}
+		}
+		if err := enc.Encode(v.Index(i).Interface()); err != nil {
+			return err
+		}
 	}
 	if err := enc.printf(")"); err != nil {
 		return err
