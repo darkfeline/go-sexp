@@ -40,14 +40,14 @@ func (enc *Encoder) Encode(v interface{}) error {
 	switch v := v.(type) {
 	case Marshaler:
 		return enc.encodeMarshaler(v)
-	case Symbol:
-		return enc.printf("%s", v)
-	case string:
-		return enc.printf("%q", v)
 	case int, uint, int32, uint32, int64, uint64:
 		return enc.printf("%d", v)
 	case float32, float64:
 		return enc.printf("%g", v)
+	case Symbol:
+		return enc.printf("%s", v)
+	case string:
+		return enc.printf("%q", v)
 	case Cons:
 		return enc.encodeCons(v)
 	default:
