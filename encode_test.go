@@ -27,6 +27,10 @@ func TestEncode(t *testing.T) {
 			t.Parallel()
 			run(t, testcase{v: 5, want: `5`})
 		})
+		t.Run("float", func(t *testing.T) {
+			t.Parallel()
+			run(t, testcase{v: 4.25, want: `4.25`})
+		})
 		t.Run("string", func(t *testing.T) {
 			t.Parallel()
 			run(t, testcase{v: "ionasal", want: `"ionasal"`})

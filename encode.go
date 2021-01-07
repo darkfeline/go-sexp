@@ -35,6 +35,9 @@ func (enc *Encoder) Encode(v interface{}) error {
 	case int, uint, int32, uint32, int64, uint64:
 		fmt.Fprintf(enc.w, "%d", v)
 		return nil
+	case float32, float64:
+		fmt.Fprintf(enc.w, "%g", v)
+		return nil
 	default:
 		return fmt.Errorf("sexp encode: unsupported type %T", v)
 	}
