@@ -1,3 +1,4 @@
+// Package sexp implements encoding s expressions.
 package sexp
 
 import (
@@ -18,6 +19,31 @@ type Cons struct {
 }
 
 // Marshal marshals a value into an s expression.
+//
+// Strings and numbers are encoded as literals.
+//
+// Symbol values are encoded as symbols.
+//
+// Cons values are encoded as cons pairs.
+//
+// Pointers are encoded as the value they point to.
+//
+// Slices and arrays are encoded as lists.
+//
+// Structs are encoded as alists or plists, via a tag on the special
+// field _sexpCoding.
+// If _sexpCoding is absent, the struct is encoded as an alist.
+//
+//  type Foo struct {
+//          _sexpCoding `plist`
+//  }
+//
+// Symbols are used as keys.  The symbol name can be specified via a
+// field tag.  The default name is the field name.
+//
+//  type Foo struct {
+//          Bar `sexp:"symbol-name"`
+//  }
 func Marshal(v interface{}) ([]byte, error) {
 	var b bytes.Buffer
 	e := NewEncoder(&b)
