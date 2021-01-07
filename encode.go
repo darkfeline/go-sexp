@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"reflect"
 )
 
 type Symbol string
@@ -51,7 +52,17 @@ func (enc *Encoder) Encode(v interface{}) error {
 	case Cons:
 		return enc.encodeCons(v)
 	default:
-		return fmt.Errorf("sexp encode: unsupported type %T", v)
+		rv := reflect.ValueOf(v)
+		// slices
+		// arrays
+		// structs? alist plist
+		switch rv.Type().Kind() {
+		case reflect.Ptr:
+			return enc.Encode(rv.Elem().Interface())
+		default:
+			return fmt.Errorf("sexp encode: unsupported type %T", v)
+		}
+
 	}
 }
 

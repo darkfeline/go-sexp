@@ -48,6 +48,11 @@ func TestEncode(t *testing.T) {
 		t.Parallel()
 		run(t, testcase{v: Cons{1, 2}, want: `(1 . 2)`})
 	})
+	t.Run("pointer", func(t *testing.T) {
+		t.Parallel()
+		v := 5
+		run(t, testcase{v: &v, want: `5`})
+	})
 	t.Run("marshaler", func(t *testing.T) {
 		t.Parallel()
 		run(t, testcase{
