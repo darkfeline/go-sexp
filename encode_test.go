@@ -57,6 +57,32 @@ func TestEncode(t *testing.T) {
 		t.Parallel()
 		run(t, testcase{v: []interface{}{5, "shiori"}, want: `(5 "shiori")`})
 	})
+	t.Run("alist", func(t *testing.T) {
+		t.Parallel()
+		t.Run("without coding", func(t *testing.T) {
+			t.Parallel()
+			type d struct {
+				Princess string
+			}
+			run(t, testcase{v: d{"yui"}, want: `((Princess . "yui"))`})
+		})
+		t.Run("with coding", func(t *testing.T) {
+			t.Parallel()
+			type d struct {
+				_sexpCoding struct{} `alist`
+				Pri         string
+			}
+			run(t, testcase{v: d{Pri: "yui"}, want: `((Pri . "yui"))`})
+		})
+		t.Run("named field", func(t *testing.T) {
+			t.Parallel()
+			type d struct {
+				_sexpCoding struct{} `alist`
+				Pri         string   `sexp:"princess"`
+			}
+			run(t, testcase{v: d{Pri: "yui"}, want: `((princess . "yui"))`})
+		})
+	})
 	t.Run("marshaler", func(t *testing.T) {
 		t.Parallel()
 		run(t, testcase{
