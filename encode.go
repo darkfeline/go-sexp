@@ -2,6 +2,7 @@ package sexp
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 )
 
@@ -16,8 +17,22 @@ func Marshal(v interface{}) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-type Encoder struct{}
+type Encoder struct {
+	w io.Writer
+}
 
-func NewEncoder(w io.Writer) *Encoder {}
+func NewEncoder(w io.Writer) *Encoder {
+	return &Encoder{
+		w: w,
+	}
+}
 
-func (enc *Encoder) Encode(v interface{}) error {}
+func (enc *Encoder) Encode(v interface{}) error {
+	switch v := v.(type) {
+	case string:
+		fmt.Fprintf(enc.w, "%q", v)
+		return nil
+	default:
+		return fmt.Errorf("sexp encode: unsupported type %T", v)
+	}
+}

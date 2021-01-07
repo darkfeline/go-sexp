@@ -8,18 +8,28 @@ import (
 
 func TestEncode(t *testing.T) {
 	t.Parallel()
+	type testcase struct {
+		v    interface{}
+		want string
+	}
+	run := func(t *testing.T, tc testcase) {
+		got, err := Marshal(tc.v)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(tc.want, string(got)); diff != "" {
+			t.Errorf("output mismatch (-want +got):\n%s", diff)
+		}
+	}
 	t.Run("literals", func(t *testing.T) {
 		t.Parallel()
 		t.Run("string", func(t *testing.T) {
 			t.Parallel()
-			got, err := Marshal("ionasal")
-			if err != nil {
-				t.Fatal(err)
-			}
-			const want = `"ionasal"`
-			if diff := cmp.Diff(want, string(got)); diff != "" {
-				t.Errorf("output mismatch (-want +got):\n%s", diff)
-			}
+			run(t, testcase{v: "ionasal", want: `"ionasal"`})
+		})
+		t.Run("escaped string", func(t *testing.T) {
+			t.Parallel()
+			run(t, testcase{v: `"ionasal"`, want: `"\"ionasal\""`})
 		})
 	})
 }
