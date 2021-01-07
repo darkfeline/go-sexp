@@ -29,6 +29,9 @@ func NewEncoder(w io.Writer) *Encoder {
 
 func (enc *Encoder) Encode(v interface{}) error {
 	switch v := v.(type) {
+	case Symbol:
+		fmt.Fprintf(enc.w, "%s", v)
+		return nil
 	case string:
 		fmt.Fprintf(enc.w, "%q", v)
 		return nil

@@ -39,5 +39,9 @@ func TestEncode(t *testing.T) {
 			t.Parallel()
 			run(t, testcase{v: `"ionasal"`, want: `"\"ionasal\""`})
 		})
+		t.Run("symbol", func(t *testing.T) {
+			t.Parallel()
+			run(t, testcase{v: Symbol("1+"), want: `1+`})
+		})
 	})
 }
