@@ -44,4 +44,8 @@ func TestEncode(t *testing.T) {
 			run(t, testcase{v: Symbol("1+"), want: `1+`})
 		})
 	})
+	t.Run("cons", func(t *testing.T) {
+		t.Parallel()
+		run(t, testcase{v: Cons{1, 2}, want: `(1 . 2)`})
+	})
 }

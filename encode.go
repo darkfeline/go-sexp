@@ -8,6 +8,11 @@ import (
 
 type Symbol string
 
+type Cons struct {
+	Car interface{}
+	Cdr interface{}
+}
+
 func Marshal(v interface{}) ([]byte, error) {
 	var b bytes.Buffer
 	e := NewEncoder(&b)
@@ -30,18 +35,40 @@ func NewEncoder(w io.Writer) *Encoder {
 func (enc *Encoder) Encode(v interface{}) error {
 	switch v := v.(type) {
 	case Symbol:
-		_, err := fmt.Fprintf(enc.w, "%s", v)
-		return err
+		return enc.printf("%s", v)
 	case string:
-		_, err := fmt.Fprintf(enc.w, "%q", v)
-		return err
+		return enc.printf("%q", v)
 	case int, uint, int32, uint32, int64, uint64:
-		_, err := fmt.Fprintf(enc.w, "%d", v)
-		return err
+		return enc.printf("%d", v)
 	case float32, float64:
-		_, err := fmt.Fprintf(enc.w, "%g", v)
-		return err
+		return enc.printf("%g", v)
+	case Cons:
+		return enc.encodeCons(v)
 	default:
 		return fmt.Errorf("sexp encode: unsupported type %T", v)
 	}
+}
+
+func (enc *Encoder) encodeCons(v Cons) error {
+	if err := enc.printf("("); err != nil {
+		return err
+	}
+	if err := enc.Encode(v.Car); err != nil {
+		return err
+	}
+	if err := enc.printf(" . "); err != nil {
+		return err
+	}
+	if err := enc.Encode(v.Cdr); err != nil {
+		return err
+	}
+	if err := enc.printf(")"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (enc *Encoder) printf(format string, v ...interface{}) error {
+	_, err := fmt.Fprintf(enc.w, format, v...)
+	return err
 }
