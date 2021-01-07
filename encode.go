@@ -167,7 +167,9 @@ func (enc *Encoder) encodeStructPlist(v reflect.Value) error {
 		} else {
 			enc.printf(" ")
 		}
-		enc.Encode(Cons{fieldKey(f), v.Field(i).Interface()})
+		enc.Encode(fieldKey(f))
+		enc.printf(" ")
+		enc.Encode(v.Field(i).Interface())
 	}
 	enc.printf(")")
 	return enc.err

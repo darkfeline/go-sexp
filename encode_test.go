@@ -83,6 +83,25 @@ func TestEncode(t *testing.T) {
 			run(t, testcase{v: d{Pri: "yui"}, want: `((princess . "yui"))`})
 		})
 	})
+	t.Run("plist", func(t *testing.T) {
+		t.Parallel()
+		t.Run("default", func(t *testing.T) {
+			t.Parallel()
+			type d struct {
+				_sexpCoding struct{} `plist`
+				Pri         string
+			}
+			run(t, testcase{v: d{Pri: "yui"}, want: `(Pri "yui")`})
+		})
+		t.Run("named field", func(t *testing.T) {
+			t.Parallel()
+			type d struct {
+				_sexpCoding struct{} `plist`
+				Pri         string   `sexp:"princess"`
+			}
+			run(t, testcase{v: d{Pri: "yui"}, want: `(princess "yui")`})
+		})
+	})
 	t.Run("marshaler", func(t *testing.T) {
 		t.Parallel()
 		run(t, testcase{
