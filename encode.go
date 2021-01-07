@@ -22,6 +22,10 @@ func Marshal(v interface{}) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
+type Marshaler interface {
+	MarshalSexp() ([]byte, error)
+}
+
 type Encoder struct {
 	w io.Writer
 }
@@ -34,6 +38,8 @@ func NewEncoder(w io.Writer) *Encoder {
 
 func (enc *Encoder) Encode(v interface{}) error {
 	switch v := v.(type) {
+	case Marshaler:
+		return enc.encodeMarshaler(v)
 	case Symbol:
 		return enc.printf("%s", v)
 	case string:
@@ -47,6 +53,17 @@ func (enc *Encoder) Encode(v interface{}) error {
 	default:
 		return fmt.Errorf("sexp encode: unsupported type %T", v)
 	}
+}
+
+func (enc *Encoder) encodeMarshaler(v Marshaler) error {
+	b, err := v.MarshalSexp()
+	if err != nil {
+		return err
+	}
+	if _, err := enc.w.Write(b); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (enc *Encoder) encodeCons(v Cons) error {
